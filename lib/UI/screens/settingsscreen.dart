@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:animation/bussiness_logic/bloc/auth_bloc.dart';
 import 'package:animation/constants/colors.dart';
+import 'package:animation/constants/strings.dart';
 import 'package:animation/data/Model/usermodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       {
         "title": "Edit Profile",
         "icon": Icons.mode_edit_outlined,
-        "ontap": () {}
+        "ontap": _navegateToProfileScreen
       },
       {"title": "Blocked Users", "icon": Icons.block},
       {"title": "Privacy Policy", "icon": Icons.privacy_tip_outlined},
@@ -35,6 +36,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         "ontap": _logout,
       },
     ];
+  }
+
+  void _navegateToProfileScreen() {
+    Navigator.pushNamed(context, profile, arguments: widget.user);
   }
 
   void showErrorDialog(String message) {
@@ -122,7 +127,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           _buildUserDetailsWidget(),
           _buildListViewWidget(),
-          
         ],
       ),
     );
@@ -185,7 +189,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           color: darkTeal,
         ),
         title: Text(item['title']),
-        
         trailing: Icon(
           Icons.arrow_forward_ios_outlined,
           color: medTeal,

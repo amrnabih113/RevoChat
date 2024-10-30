@@ -6,7 +6,6 @@ import 'package:animation/constants/functions.dart';
 import 'package:animation/constants/strings.dart';
 import 'package:animation/data/Model/chatmodel.dart';
 import 'package:animation/data/Model/usermodel.dart';
-import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
@@ -196,9 +195,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
 
   Widget _buildAddGroupWidget() {
     return InkWell(
-      onTap: () {
-       
-      },
+      onTap: () {},
       child: ListTile(
         title: const Text(
           "New Group",
@@ -290,9 +287,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
     return CircleAvatar(
       backgroundImage: user.image != null && user.image!.path.isNotEmpty
           ? FileImage(File(user.image!.path))
-          : user.imageurl != null && user.imageurl!.isNotEmpty
+          : (user.imageurl != null && user.imageurl!.isNotEmpty
               ? NetworkImage(user.imageurl!)
-              : const AssetImage("assets/images/avatar.png") as ImageProvider,
+              : const AssetImage("assets/images/avatar.png")),
       radius: 22,
     );
   }

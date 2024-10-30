@@ -53,56 +53,56 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(UserError(e.toString()));
       }
     });
-on<LoadUsers>((event, emit) async {
-  emit(UserLoading());
-  try {
-    print("Loading users =================");
+    on<LoadUsers>((event, emit) async {
+      emit(UserLoading());
+      try {
+        print("Loading users =================");
 
-    List<UserModel> users = [];
+        List<UserModel> users = [];
 
-    // Load each user in the list of IDs
-    for (String userId in event.ids) {
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
+        // Load each user in the list of IDs
+        for (String userId in event.ids) {
+          DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .get();
 
-      if (userSnapshot.exists) {
-        String userId = userSnapshot['id'] ?? '';
-        String userName = userSnapshot['username'] ?? '';
-        String email = userSnapshot['email'] ?? '';
-        String? imageUrl = userSnapshot['imageurl'];
+          if (userSnapshot.exists) {
+            String userId = userSnapshot['id'] ?? '';
+            String userName = userSnapshot['username'] ?? '';
+            String email = userSnapshot['email'] ?? '';
+            String? imageUrl = userSnapshot['imageurl'];
 
-        UserModel user;
+            UserModel user;
 
-        if (imageUrl != null && imageUrl.startsWith('http')) {
-          user = UserModel(
-            id: userId,
-            email: email,
-            name: userName,
-            imageurl: imageUrl,
-          );
-        } else {
-          user = UserModel(
-            id: userId,
-            email: email,
-            name: userName,
-            image: imageUrl != null ? XFile(imageUrl) : null,
-          );
+            if (imageUrl != null && imageUrl.startsWith('http')) {
+              user = UserModel(
+                id: userId,
+                email: email,
+                name: userName,
+                imageurl: imageUrl,
+              );
+            } else {
+              user = UserModel(
+                id: userId,
+                email: email,
+                name: userName,
+                image: imageUrl != null ? XFile(imageUrl) : null,
+              );
+            }
+
+            print("${user.email}");
+            users.add(user);
+          } else {
+            print("User data not found for ID: $userId");
+          }
         }
-        
-        print("${user.email}");
-        users.add(user);
-      } else {
-        print("User data not found for ID: $userId");
-      }
-    }
 
-    emit(UsersLoaded(users)); 
-  } catch (e) {
-    emit(UserError(e.toString()));
-  }
-});
+        emit(UsersLoaded(users));
+      } catch (e) {
+        emit(UserError(e.toString()));
+      }
+    });
 
     on<FetchAllUsers>((event, emit) async {
       emit(UserLoading());
@@ -200,6 +200,7 @@ on<LoadUsers>((event, emit) async {
 
           emit(UserUpdated());
           emit(UserLoaded(updatedUser));
+          add(LoadUser(userId));
         } else {
           emit(UserError("No user logged in."));
         }

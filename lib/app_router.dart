@@ -1,6 +1,7 @@
 import 'package:animation/UI/screens/allchatsscreen.dart';
 import 'package:animation/UI/screens/authScreen.dart';
 import 'package:animation/UI/screens/massegesscreen.dart';
+import 'package:animation/UI/screens/profilescreen.dart';
 import 'package:animation/UI/screens/splashscreen.dart';
 import 'package:animation/bussiness_logic/bloc/auth_bloc.dart';
 import 'package:animation/bussiness_logic/bloc/chat_bloc.dart';
@@ -79,7 +80,15 @@ class AppRouter {
         }
       case splash:
         return const SplashScreen();
-
+      case profile:
+        if (settings.arguments != null) {
+          return BlocProvider(
+            create: (context) => UserBloc(),
+            child: ProfileScreen(user: settings.arguments as UserModel),
+          );
+        } else {
+          return const SplashScreen();
+        }
       default:
         return const SplashScreen();
     }
