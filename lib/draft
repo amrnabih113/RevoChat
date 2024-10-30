@@ -1,0 +1,146 @@
+import 'package:flutter/material.dart';
+
+class User {
+  final String id;
+  final String name;
+  final String imageUrl;
+  bool isSelected;
+
+  User({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    this.isSelected = false,
+  });
+}
+
+class GroupChatSelectionPage extends StatefulWidget {
+  @override
+  _GroupChatSelectionPageState createState() => _GroupChatSelectionPageState();
+}
+
+class _GroupChatSelectionPageState extends State<GroupChatSelectionPage> {
+  // Sample user data (you can replace this with your actual user data)
+  List<User> users = [
+    User(id: '1', name: 'Alice', imageUrl: 'https://example.com/alice.jpg'),
+    User(id: '2', name: 'Bob', imageUrl: 'https://example.com/bob.jpg'),
+    User(id: '3', name: 'Charlie', imageUrl: 'https://example.com/charlie.jpg'),
+    // Add more users as needed
+  ];
+
+  List<User> filteredUsers = [];
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    filteredUsers = users; // Initialize filtered list
+  }
+
+  void _toggleSelection(User user) {
+    setState(() {
+      user.isSelected = !user.isSelected; // Toggle the user's selection state
+    });
+  }
+
+  void _createGroupChat() {
+    List<String> selectedUserIds = users
+        .where((user) => user.isSelected) // Get IDs of selected users
+        .map((user) => user.id)
+        .toList();
+
+    Navigator.pop(context, selectedUserIds); // Pass back selected IDs
+  }
+
+  void _filterUsers(String query) {
+    setState(() {
+      searchQuery = query;
+      // Filter users based on search query
+      filteredUsers = users
+          .where(
+              (user) => user.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Get the list of selected users
+    List<User> selectedUsers = users.where((user) => user.isSelected).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Select Users for Group Chat'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: _createGroupChat,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search users...',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: _filterUsers, // Filter users as you type
+            ),
+          ),
+          if (selectedUsers.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Selected Users:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8.0),
+                  Wrap(
+                    spacing: 8.0,
+                    children: selectedUsers.map((user) {
+                      return Chip(
+                        avatar: CircleAvatar(
+                          backgroundImage: NetworkImage(user.imageUrl),
+                        ),
+                        label: Text(user.name),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredUsers.length,
+              itemBuilder: (context, index) {
+                final user = filteredUsers[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(user.imageUrl),
+                  ),
+                  title: Text(user.name),
+                  trailing: Checkbox(
+                    value: user.isSelected, // Display selection state
+                    onChanged: (value) {
+                      _toggleSelection(user);
+                    },
+                  ),
+                  onTap: () {
+                    _toggleSelection(user); // Toggle selection on tap
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
